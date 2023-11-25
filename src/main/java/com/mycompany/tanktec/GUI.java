@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
+import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
 /**
@@ -228,7 +229,8 @@ public class GUI extends javax.swing.JFrame {
             }
         }
         
-        labels[TankY][TankX].setIcon(new ImageIcon(tank.getIcon()));       
+        labels[TankY][TankX].setIcon(new ImageIcon(tank.getIcon())); 
+        isTankInPlace[TankY][TankX] = true;
     }
     
     public void loadNextLevel() {
@@ -246,6 +248,7 @@ public class GUI extends javax.swing.JFrame {
                     labels[i][j].setOpaque(true);
                     hasWall[i][j] = false;
                     hasGrass[i][j] = false;
+                    isTankInPlace[i][j] = false;
 
                     int identifier = levelMatrix[i][j];
                     ImageIcon imageIcon = imageMap.get(identifier);
@@ -271,6 +274,7 @@ public class GUI extends javax.swing.JFrame {
             TankX = 4;
 
             labels[TankY][TankX].setIcon(new ImageIcon(tank.getIcon()));
+            isTankInPlace[TankY][TankX] = true;
 
         } else {
 
@@ -297,6 +301,7 @@ public class GUI extends javax.swing.JFrame {
                 case KeyEvent.VK_S -> moveTank(1,0, 'S');
                 case KeyEvent.VK_A -> moveTank(0,-1, 'A');
                 case KeyEvent.VK_D -> moveTank(0,1, 'D');
+                case KeyEvent.VK_SPACE -> shootBullet();
             }       
             
             new Thread(() -> {
@@ -317,8 +322,12 @@ public class GUI extends javax.swing.JFrame {
     private void moveTank(int deltaY, int deltaX, char key) {
         int newTankX = TankX + deltaX;
         int newTankY = TankY + deltaY;
+        tank.setDirection(key);
         
         if (isValidMovement(newTankY, newTankX)) {
+            
+            isTankInPlace[TankY][TankX] = false;
+            isTankInPlace[newTankY][newTankX] = true;
 
         boolean originalHasGrass = hasGrass[TankY][TankX];
 
@@ -350,6 +359,100 @@ public class GUI extends javax.swing.JFrame {
         
     }
     
+    private void shootBullet() {
+        // Calcular la posición inicial de la bala
+        final int bulletX = TankX;
+        final int bulletY = TankY;
+
+        // Obtener la dirección del tanque
+        final char tankDirection = tank.getDirection();
+
+        // Crear un nuevo hilo para la bala
+        new Thread(() -> {
+            int currentBulletX = bulletX;
+            int currentBulletY = bulletY;
+            
+            switch (tankDirection) {
+                        case 'W' -> currentBulletY--;
+                        case 'S' -> currentBulletY++;
+                        case 'A' -> currentBulletX--;
+                        case 'D' -> currentBulletX++;
+                    }
+
+            while (true) {
+                try {
+                    // Esperar 1000 milisegundos antes de avanzar la bala
+                    Thread.sleep(250);
+
+                    // Actualizar la posición de la bala en la interfaz gráfica
+                    final int finalBulletX = currentBulletX;
+                    final int finalBulletY = currentBulletY;
+
+                    
+                    labels[finalBulletY][finalBulletX].setIcon(new ImageIcon("src/main/resources/bulletU.gif"));
+                    
+                    
+                   
+                    if (hasWall[finalBulletY][finalBulletX]) {
+                        labels[finalBulletY][finalBulletX].setIcon(null);
+                        labels[finalBulletY][finalBulletX].setBackground(new java.awt.Color(0, 0, 0));
+                        hasWall[finalBulletY][finalBulletX] = false;
+                        switch (tankDirection) {
+                            case ('W') -> {
+                                labels[finalBulletY+1][finalBulletX].setIcon(null);
+                            }
+                            case ('S') -> {
+                                labels[finalBulletY-1][finalBulletX].setIcon(null);
+                            }
+                            case ('A') -> {
+                                labels[finalBulletY][finalBulletX+1].setIcon(null);
+                            }                       
+                            case ('D') -> {
+                                labels[finalBulletY][finalBulletX-1].setIcon(null);
+                            }
+                        }
+                        break;
+                    }
+                    
+                    switch (tankDirection) {
+                        case ('W') -> {
+                            if (!isTankInPlace[finalBulletY+1][finalBulletX]){
+                                labels[finalBulletY+1][finalBulletX].setIcon(null);
+                            }
+                            currentBulletY--;
+                        }
+                        case ('S') -> {
+                            if (!isTankInPlace[finalBulletY-1][finalBulletX]){
+                                labels[finalBulletY-1][finalBulletX].setIcon(null);
+                            }
+                            currentBulletY++;
+                        }
+                        case ('A') -> {
+                            if (!isTankInPlace[finalBulletY][finalBulletX+1]){
+                                labels[finalBulletY][finalBulletX+1].setIcon(null);
+                            }
+                            currentBulletX--;
+                        }                       
+                        case ('D') -> {
+                            if (!isTankInPlace[finalBulletY][finalBulletX-1]){
+                                labels[finalBulletY][finalBulletX-1].setIcon(null);
+                            }
+                            currentBulletX++;
+                        }
+                    }
+
+                    // Verificar si la bala ha salido de los límites del tablero
+                    if (currentBulletY < 0 || currentBulletY >= 13 || currentBulletX < 0 || currentBulletX >= 13) {
+                        labels[finalBulletY][finalBulletX].setIcon(null);
+                        break;
+                    }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+    
     private boolean isValidMovement(int y, int x){
         
         return y >= 0 && y < labels.length && x >= 0 && x < labels[0].length && !hasWall[y][x];
@@ -358,6 +461,7 @@ public class GUI extends javax.swing.JFrame {
     private JLabel[][] labels = new JLabel[13][13];
     private boolean[][] hasWall = new boolean[13][13];
     private boolean[][] hasGrass = new boolean[13][13];
+    private boolean[][] isTankInPlace = new boolean[13][13];
     private int enemiesLeft = 20;
     private int playerLifes = 3;
     private int actualLevel = 1;
@@ -369,7 +473,7 @@ public class GUI extends javax.swing.JFrame {
     private Map<Integer, ImageIcon> imageMap = new HashMap<>(); //Hash Map utilizado para crear niveles
     private int[][] levelMatrix;
     
-    Tank tank = new Tank(500, "src/main/resources/tankU.gif", 1); //Crear tanque para colocar su label en la matriz y obtener sus atributos
+    Tank tank = new Tank(500, "src/main/resources/tankU.gif", 1, 'W'); //Crear tanque para colocar su label en la matriz y obtener sus atributos
     
     Timer movementTimer;
     // Variables declaration - do not modify//GEN-BEGIN:variables
