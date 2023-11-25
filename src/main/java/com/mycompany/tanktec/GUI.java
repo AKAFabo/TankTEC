@@ -62,7 +62,8 @@ public class GUI extends javax.swing.JFrame {
         playerLifesLabel = new javax.swing.JLabel();
         actualLevelLabel = new javax.swing.JLabel();
         wildcardLabel = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
+        startLevelButton = new javax.swing.JButton();
+        nextLevelButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setBackground(new java.awt.Color(51, 51, 51));
@@ -88,10 +89,17 @@ public class GUI extends javax.swing.JFrame {
 
         wildcardLabel.setText("Comodin actual:");
 
-        jButton1.setText("Empezar nivel");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        startLevelButton.setText("Empezar nivel");
+        startLevelButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                startLevelButtonActionPerformed(evt);
+            }
+        });
+
+        nextLevelButton.setText("Siguiente nivel");
+        nextLevelButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                nextLevelButtonActionPerformed(evt);
             }
         });
 
@@ -103,13 +111,14 @@ public class GUI extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(GamePlayPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(enemiesLeftLabel)
                     .addComponent(playerLifesLabel)
                     .addComponent(actualLevelLabel)
                     .addComponent(wildcardLabel)
-                    .addComponent(jButton1))
-                .addContainerGap(63, Short.MAX_VALUE))
+                    .addComponent(startLevelButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(nextLevelButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(59, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -123,8 +132,10 @@ public class GUI extends javax.swing.JFrame {
                 .addGap(75, 75, 75)
                 .addComponent(wildcardLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jButton1)
-                .addGap(77, 77, 77))
+                .addComponent(startLevelButton)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(nextLevelButton)
+                .addGap(42, 42, 42))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(GamePlayPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -134,9 +145,16 @@ public class GUI extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton1ActionPerformed
+    private void startLevelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startLevelButtonActionPerformed
+        
+    }//GEN-LAST:event_startLevelButtonActionPerformed
+
+    private void nextLevelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nextLevelButtonActionPerformed
+        loadNextLevel();
+        GamePlayPanel.setFocusable(true);
+        GamePlayPanel.requestFocusInWindow();
+        //GamePlayPanel.addKeyListener(new TankKeyListener());
+    }//GEN-LAST:event_nextLevelButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -176,17 +194,16 @@ public class GUI extends javax.swing.JFrame {
     public void setBoard() {
 
         GamePlayPanel.setPreferredSize(new Dimension(620, 620));
-
-        int labelSize = 620 / 13;
-
+       
         GridLayout gridLayout = new GridLayout(13, 13);
         GamePlayPanel.setLayout(gridLayout);
         
-        int[][] levelMatrix = levelBuilder.levelChooser(2);
+        levelMatrix = levelBuilder.levelChooser(actualLevel);
 
-        // Rellenar la matriz de JLabels
         for (int i = 0; i < 13; i++) {
             for (int j = 0; j < 13; j++) {
+                
+                
 
                 labels[i][j] = new JLabel();
                 labels[i][j].setOpaque(true);
@@ -211,7 +228,54 @@ public class GUI extends javax.swing.JFrame {
             }
         }
         
-        labels[TankY][TankX].setIcon(new ImageIcon(tank.getIcon()));
+        labels[TankY][TankX].setIcon(new ImageIcon(tank.getIcon()));       
+    }
+    
+    public void loadNextLevel() {
+        actualLevel++;
+
+        if (actualLevel <= maxLevel) {
+            // Limpiar el panel actual
+            GamePlayPanel.removeAll();
+
+            levelMatrix = levelBuilder.levelChooser(actualLevel);
+
+            for (int i = 0; i < 13; i++) {
+                for (int j = 0; j < 13; j++) {
+                    labels[i][j] = new JLabel();
+                    labels[i][j].setOpaque(true);
+                    hasWall[i][j] = false;
+                    hasGrass[i][j] = false;
+
+                    int identifier = levelMatrix[i][j];
+                    ImageIcon imageIcon = imageMap.get(identifier);
+
+                    if (identifier != 0) {
+                        labels[i][j].setIcon(imageIcon);
+                        if (identifier != 5) {
+                            hasWall[i][j] = true;
+                        } else {
+                            hasGrass[i][j] = true;
+                        }
+                    } else {
+                        labels[i][j].setBackground(new java.awt.Color(0, 0, 0));
+                    }
+                    labels[i][j].setPreferredSize(new Dimension(labelSize, labelSize));
+                    GamePlayPanel.add(labels[i][j]);
+                }
+            }
+            GamePlayPanel.revalidate();
+            GamePlayPanel.repaint();
+            
+            TankY = 12;
+            TankX = 4;
+
+            labels[TankY][TankX].setIcon(new ImageIcon(tank.getIcon()));
+
+        } else {
+
+            System.out.println("¡Has completado todos los niveles!");
+        }
     }
           
     private void initializeImageMap() {
@@ -297,10 +361,13 @@ public class GUI extends javax.swing.JFrame {
     private int enemiesLeft = 20;
     private int playerLifes = 3;
     private int actualLevel = 1;
+    private int maxLevel = 8;
     private int TankX = 4;
     private int TankY = 12;
+    int labelSize = 620 / 13;
     
     private Map<Integer, ImageIcon> imageMap = new HashMap<>(); //Hash Map utilizado para crear niveles
+    private int[][] levelMatrix;
     
     Tank tank = new Tank(500, "src/main/resources/tankU.gif", 1); //Crear tanque para colocar su label en la matriz y obtener sus atributos
     
@@ -309,8 +376,9 @@ public class GUI extends javax.swing.JFrame {
     private javax.swing.JPanel GamePlayPanel;
     private javax.swing.JLabel actualLevelLabel;
     private javax.swing.JLabel enemiesLeftLabel;
-    private javax.swing.JButton jButton1;
+    private javax.swing.JButton nextLevelButton;
     private javax.swing.JLabel playerLifesLabel;
+    private javax.swing.JButton startLevelButton;
     private javax.swing.JLabel wildcardLabel;
     // End of variables declaration//GEN-END:variables
 }
