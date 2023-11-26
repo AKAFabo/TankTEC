@@ -371,12 +371,25 @@ public class GUI extends javax.swing.JFrame {
         new Thread(() -> {
             int currentBulletX = bulletX;
             int currentBulletY = bulletY;
+            String bulletDirection = null;
             
             switch (tankDirection) {
-                        case 'W' -> currentBulletY--;
-                        case 'S' -> currentBulletY++;
-                        case 'A' -> currentBulletX--;
-                        case 'D' -> currentBulletX++;
+                        case ('W') -> {
+                            currentBulletY--;
+                            bulletDirection = bulletU;
+                        }                                                 
+                        case ('S') -> {
+                            currentBulletY++;     
+                            bulletDirection = bulletD;
+                        }                                           
+                        case ('A') -> {
+                            currentBulletX--;           
+                            bulletDirection = bulletL;
+                        }
+                        case ('D') -> {
+                            currentBulletX++;
+                            bulletDirection = bulletR;
+                        }                       
                     }
 
             while (true) {
@@ -389,7 +402,7 @@ public class GUI extends javax.swing.JFrame {
                     final int finalBulletY = currentBulletY;
 
                     
-                    labels[finalBulletY][finalBulletX].setIcon(new ImageIcon("src/main/resources/bulletU.gif"));
+                    labels[finalBulletY][finalBulletX].setIcon(new ImageIcon(bulletDirection));
                     
                     
                    
@@ -472,6 +485,11 @@ public class GUI extends javax.swing.JFrame {
     
     private Map<Integer, ImageIcon> imageMap = new HashMap<>(); //Hash Map utilizado para crear niveles
     private int[][] levelMatrix;
+    
+    private final String bulletU = "src/main/resources/bulletU.gif";
+    private final String bulletD = "src/main/resources/bulletD.gif";
+    private final String bulletL = "src/main/resources/bulletL.gif";
+    private final String bulletR = "src/main/resources/bulletR.gif";
     
     Tank tank = new Tank(500, "src/main/resources/tankU.gif", 1, 'W'); //Crear tanque para colocar su label en la matriz y obtener sus atributos
     
