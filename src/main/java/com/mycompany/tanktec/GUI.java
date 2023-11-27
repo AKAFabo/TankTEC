@@ -147,7 +147,7 @@ public class GUI extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void startLevelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startLevelButtonActionPerformed
-        
+        //spawnEnemies();
     }//GEN-LAST:event_startLevelButtonActionPerformed
 
     private void nextLevelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nextLevelButtonActionPerformed
@@ -203,9 +203,7 @@ public class GUI extends javax.swing.JFrame {
 
         for (int i = 0; i < 13; i++) {
             for (int j = 0; j < 13; j++) {
-                
-                
-
+                              
                 labels[i][j] = new JLabel();
                 labels[i][j].setOpaque(true);
                 
@@ -216,6 +214,9 @@ public class GUI extends javax.swing.JFrame {
                     labels[i][j].setIcon(imageIcon);
                     if (identifier != 5){ //Si es arbol es transparente
                         hasWall[i][j] = true; //Se hace para verificar las colisiones a la hora de mover el tanque enemigo y propio
+                        if (identifier == 4){
+                            bricks[i][j] = new Wall();
+                        }
                     } else {
                         hasGrass[i][j] = true;
                     }
@@ -237,7 +238,6 @@ public class GUI extends javax.swing.JFrame {
         actualLevel++;
 
         if (actualLevel <= maxLevel) {
-            // Limpiar el panel actual
             GamePlayPanel.removeAll();
 
             levelMatrix = levelBuilder.levelChooser(actualLevel);
@@ -249,6 +249,7 @@ public class GUI extends javax.swing.JFrame {
                     hasWall[i][j] = false;
                     hasGrass[i][j] = false;
                     isTankInPlace[i][j] = false;
+                    bricks[i][j] = null;
 
                     int identifier = levelMatrix[i][j];
                     ImageIcon imageIcon = imageMap.get(identifier);
@@ -257,6 +258,12 @@ public class GUI extends javax.swing.JFrame {
                         labels[i][j].setIcon(imageIcon);
                         if (identifier != 5) {
                             hasWall[i][j] = true;
+                            if (identifier == 4){
+                                bricks[i][j] = new Wall();
+                            } else if (identifier == 1){
+                                labels[i][j].setIcon(null);
+                                labels[i][j].setBackground(new java.awt.Color(0, 0, 128));
+                            }
                         } else {
                             hasGrass[i][j] = true;
                         }
@@ -332,7 +339,7 @@ public class GUI extends javax.swing.JFrame {
         boolean originalHasGrass = hasGrass[TankY][TankX];
 
         if (originalHasGrass) {
-            labels[TankY][TankX].setBackground(new Color(144, 238, 144)); 
+            labels[TankY][TankX].setBackground(new Color(0, 128, 0)); 
         } else {
             labels[TankY][TankX].setIcon(null);
         }
@@ -350,7 +357,7 @@ public class GUI extends javax.swing.JFrame {
         boolean newHasGrass = hasGrass[TankY][TankX];
 
         if (newHasGrass) {
-            labels[TankY][TankX].setBackground(new Color(173, 216, 230)); 
+            labels[TankY][TankX].setBackground(new Color(0, 128, 0)); 
         } else {
             labels[TankY][TankX].setIcon(new ImageIcon(tank.getIcon()));
         }
@@ -360,15 +367,14 @@ public class GUI extends javax.swing.JFrame {
     }
     
     private void shootBullet() {
-        // Calcular la posición inicial de la bala
+
         final int bulletX = TankX;
         final int bulletY = TankY;
-
-        // Obtener la dirección del tanque
         final char tankDirection = tank.getDirection();
 
-        // Crear un nuevo hilo para la bala
         new Thread(() -> {
+            
+            
             int currentBulletX = bulletX;
             int currentBulletY = bulletY;
             String bulletDirection = null;
@@ -394,22 +400,32 @@ public class GUI extends javax.swing.JFrame {
 
             while (true) {
                 try {
-                    // Esperar 1000 milisegundos antes de avanzar la bala
-                    Thread.sleep(250);
+                    Thread.sleep(250);                   
 
                     // Actualizar la posición de la bala en la interfaz gráfica
                     final int finalBulletX = currentBulletX;
                     final int finalBulletY = currentBulletY;
-
-                    
+                  
                     labels[finalBulletY][finalBulletX].setIcon(new ImageIcon(bulletDirection));
-                    
-                    
-                   
-                    if (hasWall[finalBulletY][finalBulletX]) {
-                        labels[finalBulletY][finalBulletX].setIcon(null);
-                        labels[finalBulletY][finalBulletX].setBackground(new java.awt.Color(0, 0, 0));
-                        hasWall[finalBulletY][finalBulletX] = false;
+                                                        
+                    if (hasWall[finalBulletY][finalBulletX] && levelMatrix[finalBulletY][finalBulletX] != 1 &&
+                            levelMatrix[finalBulletY][finalBulletX] != 5) {
+                        
+                        if (levelMatrix[finalBulletY][finalBulletX] == 4){                           
+                            bricks[finalBulletY][finalBulletX].takeDamage();
+                            labels[finalBulletY][finalBulletX].setIcon(new ImageIcon("src/main/resources/brickWall.jpg"));
+                            
+                            if (bricks[finalBulletY][finalBulletX].getHealth() == 0){
+                                labels[finalBulletY][finalBulletX].setIcon(null);
+                                labels[finalBulletY][finalBulletX].setBackground(new java.awt.Color(0, 0, 0));
+                                hasWall[finalBulletY][finalBulletX] = false;
+                            }
+                        } else {
+                            switch (levelMatrix[finalBulletY][finalBulletX]){
+                                case 2 -> labels[finalBulletY][finalBulletX].setIcon(new ImageIcon("src/main/resources/metalWall.jpg"));
+                                case 3 -> labels[finalBulletY][finalBulletX].setBackground(new java.awt.Color(0, 0, 0));                                
+                            }
+                        }                       
                         switch (tankDirection) {
                             case ('W') -> {
                                 labels[finalBulletY+1][finalBulletX].setIcon(null);
@@ -425,6 +441,11 @@ public class GUI extends javax.swing.JFrame {
                             }
                         }
                         break;
+                    }
+                    
+                    if (levelMatrix[finalBulletY][finalBulletX] == 5){
+                        labels[finalBulletY][finalBulletX].setIcon(null);
+                        labels[finalBulletY][finalBulletX].setBackground(new java.awt.Color(0, 128, 0));
                     }
                     
                     switch (tankDirection) {
@@ -454,7 +475,6 @@ public class GUI extends javax.swing.JFrame {
                         }
                     }
 
-                    // Verificar si la bala ha salido de los límites del tablero
                     if (currentBulletY < 0 || currentBulletY >= 13 || currentBulletX < 0 || currentBulletX >= 13) {
                         labels[finalBulletY][finalBulletX].setIcon(null);
                         break;
@@ -474,7 +494,10 @@ public class GUI extends javax.swing.JFrame {
     private JLabel[][] labels = new JLabel[13][13];
     private boolean[][] hasWall = new boolean[13][13];
     private boolean[][] hasGrass = new boolean[13][13];
+    private boolean[][] hasWater = new boolean[13][13];
     private boolean[][] isTankInPlace = new boolean[13][13];
+    private Wall[][] bricks = new Wall[13][13];
+    
     private int enemiesLeft = 20;
     private int playerLifes = 3;
     private int actualLevel = 1;
@@ -483,7 +506,7 @@ public class GUI extends javax.swing.JFrame {
     private int TankY = 12;
     int labelSize = 620 / 13;
     
-    private Map<Integer, ImageIcon> imageMap = new HashMap<>(); //Hash Map utilizado para crear niveles
+    private Map<Integer, ImageIcon> imageMap = new HashMap<>(); 
     private int[][] levelMatrix;
     
     private final String bulletU = "src/main/resources/bulletU.gif";
@@ -491,7 +514,7 @@ public class GUI extends javax.swing.JFrame {
     private final String bulletL = "src/main/resources/bulletL.gif";
     private final String bulletR = "src/main/resources/bulletR.gif";
     
-    Tank tank = new Tank(500, "src/main/resources/tankU.gif", 1, 'W'); //Crear tanque para colocar su label en la matriz y obtener sus atributos
+    Tank tank = new Tank(500, "src/main/resources/tankU.gif", 1, 'W'); 
     
     Timer movementTimer;
     // Variables declaration - do not modify//GEN-BEGIN:variables
