@@ -5,6 +5,7 @@
 package Game;
 
 import com.mycompany.tanktec.Player.Tank;
+import com.mycompany.tanktec.Wall;
 import com.mycompany.tanktec.levelBuilder;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -193,6 +194,7 @@ public class GUI extends javax.swing.JFrame {
     public void paintBoard(int[][] levelMatrix){
             // Limpiar el panel actual
     }
+    
     public void setBoard() {
 
         GamePlayPanel.setPreferredSize(new Dimension(620, 620));
@@ -281,41 +283,7 @@ public class GUI extends javax.swing.JFrame {
 
             labels[TankY][TankX].setIcon(new ImageIcon(tank.getIcon()));
             isTankInPlace[TankY][TankX] = true;
-    }
-    
-    public void setBoard() {
-        GamePlayPanel.setPreferredSize(new Dimension(620, 620));
-       
-        GridLayout gridLayout = new GridLayout(13, 13);
-        GamePlayPanel.setLayout(gridLayout);
-        
-        levelMatrix = levelBuilder.levelChooser(game.getActualLevel());
-
-        for (int i = 0; i < 13; i++) {
-            for (int j = 0; j < 13; j++) {
-                labels[i][j] = new JLabel();
-                labels[i][j].setOpaque(true);
-                
-                int identifier = levelMatrix[i][j];
-                ImageIcon imageIcon = imageMap.get(identifier);
-                
-                if (identifier != 0){
-                    labels[i][j].setIcon(imageIcon);
-                    if (identifier != 5){ //Si es arbol es transparente
-                        hasWall[i][j] = true; //Se hace para verificar las colisiones a la hora de mover el tanque enemigo y propio
-                    } else {
-                        hasGrass[i][j] = true;
-                    }
-                } else {
-                    labels[i][j].setBackground(new java.awt.Color(0, 0, 0));
-                }
-                labels[i][j].setPreferredSize(new Dimension(labelSize, labelSize));
-
-                GamePlayPanel.add(labels[i][j]);
-            }
         }
-        labels[TankY][TankX].setIcon(new ImageIcon(tank.getIcon())); 
-        isTankInPlace[TankY][TankX] = true;
     }
           
     private void initializeImageMap() {

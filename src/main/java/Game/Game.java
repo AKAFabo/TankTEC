@@ -61,6 +61,10 @@ public class Game {
     
     
     /*                Methods                 */
+    public void startGame(){
+        
+    }
+    
     public void nextLevel() {
         actualLevel++;
         if (actualLevel <= maxLevel) {
