@@ -68,7 +68,7 @@ public class Game {
     public void nextLevel() {
         actualLevel++;
         if (actualLevel <= maxLevel) {
-            window.paintBoard(levelBuilder.levelChooser(actualLevel));
+            window.loadNextLevel(/*levelBuilder.levelChooser(actualLevel)*/);
         } else {
             System.out.println("¡Has completado todos los niveles!");
         }

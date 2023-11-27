@@ -30,13 +30,16 @@
               <EmptySpace max="-2" attributes="0"/>
               <Component id="GamePlayPanel" min="-2" max="-2" attributes="0"/>
               <EmptySpace type="separate" max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                  <Component id="enemiesLeftLabel" min="-2" max="-2" attributes="0"/>
-                  <Component id="playerLifesLabel" min="-2" max="-2" attributes="0"/>
-                  <Component id="actualLevelLabel" min="-2" max="-2" attributes="0"/>
-                  <Component id="wildcardLabel" min="-2" max="-2" attributes="0"/>
-                  <Component id="startLevelButton" max="32767" attributes="0"/>
-                  <Component id="nextLevelButton" alignment="0" max="32767" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                      <Component id="enemiesLeftLabel" min="-2" max="-2" attributes="0"/>
+                      <Component id="playerLifesLabel" min="-2" max="-2" attributes="0"/>
+                      <Component id="actualLevelLabel" min="-2" max="-2" attributes="0"/>
+                      <Component id="wildcardLabel" min="-2" max="-2" attributes="0"/>
+                      <Component id="startLevelButton" max="32767" attributes="0"/>
+                      <Component id="nextLevelButton" alignment="0" max="32767" attributes="0"/>
+                  </Group>
+                  <Component id="jButton1" min="-2" pref="32" max="-2" attributes="0"/>
               </Group>
               <EmptySpace pref="59" max="32767" attributes="0"/>
           </Group>
@@ -54,6 +57,8 @@
               <EmptySpace min="-2" pref="75" max="-2" attributes="0"/>
               <Component id="wildcardLabel" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="32767" attributes="0"/>
+              <Component id="jButton1" min="-2" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
               <Component id="startLevelButton" min="-2" max="-2" attributes="0"/>
               <EmptySpace type="unrelated" max="-2" attributes="0"/>
               <Component id="nextLevelButton" min="-2" max="-2" attributes="0"/>
@@ -91,21 +96,21 @@
     <Component class="javax.swing.JLabel" name="enemiesLeftLabel">
       <Properties>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-          <Connection code="&quot;Enemigos restantes: &quot; +  enemiesLeft" type="code"/>
+          <Connection code="&quot;Enemigos restantes: &quot; +  game.getRemainingEnemies()" type="code"/>
         </Property>
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="playerLifesLabel">
       <Properties>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-          <Connection code="&quot;Vidas restantes: &quot; + playerLifes" type="code"/>
+          <Connection code="&quot;Vidas restantes: &quot; + game.getPlayerLifes()" type="code"/>
         </Property>
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="actualLevelLabel">
       <Properties>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-          <Connection code="&quot;Nivel actual: &quot; + actualLevel" type="code"/>
+          <Connection code="&quot;Nivel actual: &quot; + game.getActualLevel()" type="code"/>
         </Property>
       </Properties>
     </Component>
@@ -129,6 +134,11 @@
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="nextLevelButtonActionPerformed"/>
       </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="jButton1">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="jButton1"/>
+      </Properties>
     </Component>
   </SubComponents>
 </Form>

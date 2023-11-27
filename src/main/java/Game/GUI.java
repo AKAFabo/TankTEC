@@ -4,6 +4,7 @@
  */
 package Game;
 
+import com.mycompany.tanktec.Enemies.EnemyTank;
 import com.mycompany.tanktec.Player.Tank;
 import com.mycompany.tanktec.Wall;
 import com.mycompany.tanktec.levelBuilder;
@@ -14,8 +15,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
@@ -39,13 +42,6 @@ public class GUI extends javax.swing.JFrame {
         GamePlayPanel.requestFocusInWindow();
         GamePlayPanel.addKeyListener(new TankKeyListener());
         
-        movementTimer = new Timer(5000, new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // Detener el temporizador después de cada período de descanso
-                movementTimer.stop();
-            }
-        });
     }
 
     /**
@@ -64,6 +60,7 @@ public class GUI extends javax.swing.JFrame {
         wildcardLabel = new javax.swing.JLabel();
         startLevelButton = new javax.swing.JButton();
         nextLevelButton = new javax.swing.JButton();
+        jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setBackground(new java.awt.Color(51, 51, 51));
@@ -103,6 +100,8 @@ public class GUI extends javax.swing.JFrame {
             }
         });
 
+        jButton1.setText("jButton1");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -111,13 +110,15 @@ public class GUI extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(GamePlayPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(enemiesLeftLabel)
-                    .addComponent(playerLifesLabel)
-                    .addComponent(actualLevelLabel)
-                    .addComponent(wildcardLabel)
-                    .addComponent(startLevelButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(nextLevelButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(enemiesLeftLabel)
+                        .addComponent(playerLifesLabel)
+                        .addComponent(actualLevelLabel)
+                        .addComponent(wildcardLabel)
+                        .addComponent(startLevelButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(nextLevelButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(59, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -132,6 +133,8 @@ public class GUI extends javax.swing.JFrame {
                 .addGap(75, 75, 75)
                 .addComponent(wildcardLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jButton1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(startLevelButton)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(nextLevelButton)
@@ -146,13 +149,17 @@ public class GUI extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void startLevelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startLevelButtonActionPerformed
-        //spawnEnemies();
+        SwingUtilities.invokeLater(() -> {
+            spawnTanks();
+            GamePlayPanel.setFocusable(true);
+            GamePlayPanel.requestFocusInWindow();
+        });
     }//GEN-LAST:event_startLevelButtonActionPerformed
 
     private void nextLevelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nextLevelButtonActionPerformed
         GamePlayPanel.setFocusable(true);
         GamePlayPanel.requestFocusInWindow();
-        game.nextLevel();
+        loadNextLevel();
         //GamePlayPanel.addKeyListener(new TankKeyListener());
     }//GEN-LAST:event_nextLevelButtonActionPerformed
 
@@ -160,6 +167,8 @@ public class GUI extends javax.swing.JFrame {
      * @param args the command line arguments
      */
     public static void main(String args[]) {
+        
+        System.out.println(Thread.currentThread().getName());
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
@@ -192,7 +201,7 @@ public class GUI extends javax.swing.JFrame {
     }
     
     public void paintBoard(int[][] levelMatrix){
-            // Limpiar el panel actual
+    
     }
     
     public void setBoard() {
@@ -239,6 +248,9 @@ public class GUI extends javax.swing.JFrame {
     
     public void loadNextLevel() {
         actualLevel++;
+        System.out.println("Hola");
+        
+        levelMatrix = levelBuilder.levelChooser(actualLevel);
 
         if (actualLevel <= maxLevel) {
             GamePlayPanel.removeAll();
@@ -295,35 +307,34 @@ public class GUI extends javax.swing.JFrame {
     }
     
     private class TankKeyListener implements KeyListener {
-             
         @Override
         public void keyPressed(KeyEvent e) {
             int keyCode = e.getKeyCode();
-            
-            switch (keyCode){
-                case KeyEvent.VK_W -> moveTank(-1,0, 'W');
-                case KeyEvent.VK_S -> moveTank(1,0, 'S');
-                case KeyEvent.VK_A -> moveTank(0,-1, 'A');
-                case KeyEvent.VK_D -> moveTank(0,1, 'D');
-                case KeyEvent.VK_SPACE -> shootBullet();
-            }       
-            
+
             new Thread(() -> {
-            movementTimer.start();
-        }).start();
+                switch (keyCode) {
+                    case KeyEvent.VK_W -> moveTank(-1, 0, 'W');
+                    case KeyEvent.VK_S -> moveTank(1, 0, 'S');
+                    case KeyEvent.VK_A -> moveTank(0, -1, 'A');
+                    case KeyEvent.VK_D -> moveTank(0, 1, 'D');
+                    case KeyEvent.VK_SPACE -> shootBullet();
+                }
+            }).start();
         }
 
         @Override
         public void keyReleased(KeyEvent e) {
-            
-        } 
+            // Puedes agregar lógica adicional aquí si es necesario
+        }
+
         @Override
         public void keyTyped(KeyEvent e) {
-            
+            // Puedes agregar lógica adicional aquí si es necesario
         }
     }
+
     
-    private void moveTank(int deltaY, int deltaX, char key) {
+    private synchronized void moveTank(int deltaY, int deltaX, char key) {
         int newTankX = TankX + deltaX;
         int newTankY = TankY + deltaY;
         tank.setDirection(key);
@@ -363,7 +374,7 @@ public class GUI extends javax.swing.JFrame {
         
     }
     
-    private void shootBullet() {
+    private synchronized void shootBullet() {
 
         final int bulletX = TankX;
         final int bulletY = TankY;
@@ -487,12 +498,40 @@ public class GUI extends javax.swing.JFrame {
         return y >= 0 && y < labels.length && x >= 0 && x < labels[0].length && !hasWall[y][x];
     }
     
+    public synchronized void spawnTanks() {
+        new Thread(() -> {
+            Random random = new Random();
+
+            for (int i = 0; i < 20; i++) {
+                int randomX = random.nextInt(13);
+                EnemyTank e = new EnemyTank("src/main/resources/GreenTankD.gif", "", 2, 1000, 1000, randomX, 'S');
+                enemies.add(e);
+
+                SwingUtilities.invokeLater(() -> {
+                    if (!hasWall[0][randomX]) {
+                        labels[0][randomX].setIcon(new ImageIcon(e.getIcon()));
+                        hasWall[0][randomX] = true;
+                    }
+                });
+
+                try {
+                    // Sleep for 1 second
+                    Thread.sleep(1000);
+                } catch (InterruptedException ex) {
+                    ex.printStackTrace();
+                    Thread.currentThread().interrupt();
+                }
+            }
+            System.out.print(Thread.currentThread().getName());
+        }).start();
+    }
     private JLabel[][] labels = new JLabel[13][13];
     private boolean[][] hasWall = new boolean[13][13];
     private boolean[][] hasGrass = new boolean[13][13];
     private boolean[][] hasWater = new boolean[13][13];
     private boolean[][] isTankInPlace = new boolean[13][13];
     private Wall[][] bricks = new Wall[13][13];
+    private ArrayList<EnemyTank> enemies = new ArrayList<>();
     
     private int enemiesLeft = 20;
     private int playerLifes = 3;
@@ -517,6 +556,7 @@ public class GUI extends javax.swing.JFrame {
     private javax.swing.JPanel GamePlayPanel;
     private javax.swing.JLabel actualLevelLabel;
     private javax.swing.JLabel enemiesLeftLabel;
+    private javax.swing.JButton jButton1;
     private javax.swing.JButton nextLevelButton;
     private javax.swing.JLabel playerLifesLabel;
     private javax.swing.JButton startLevelButton;

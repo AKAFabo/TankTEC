@@ -10,12 +10,10 @@ package com.mycompany.tanktec.Enemies;
  */
 public class SimpleEnemy extends EnemyTank{
     
-    private SimpleEnemy(String icon, String name, int health, int timeBetweenShots, int speed) {
-        super(icon, name, health, timeBetweenShots, speed); //Used for testing
+    private SimpleEnemy(String icon, String name, int health, int timeBetweenShots, int speed, int x, String direction) {
+        super(icon, name, health, timeBetweenShots, speed, x, 'S');
     }
     
-    public SimpleEnemy() {
-        super("icono_predeterminado", "Simple Enemy", 2, 2000, 2);
-    }
+
     
 }

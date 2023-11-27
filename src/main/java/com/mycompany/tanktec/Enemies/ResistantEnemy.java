@@ -10,13 +10,10 @@ package com.mycompany.tanktec.Enemies;
  */
 public class ResistantEnemy extends EnemyTank{
     
-    public ResistantEnemy(String icon, String name, int health, int timeBetweenShots, int speed) {
-        super(icon, name, health, timeBetweenShots, speed);
+    public ResistantEnemy(String icon, String name, int health, int timeBetweenShots, int speed, int x, String direction) {
+        super(icon, name, health, timeBetweenShots, speed, x, 'S');
     }
     
     
-    public ResistantEnemy() {
-        super("icono_predeterminado", "ResistantEnemy", 4, 2000, 2);
-    }
     
 }
