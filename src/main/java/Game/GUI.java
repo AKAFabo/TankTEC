@@ -2,9 +2,11 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
-package com.mycompany.tanktec;
+package Game;
 
 import com.mycompany.tanktec.Player.Tank;
+import com.mycompany.tanktec.Wall;
+import com.mycompany.tanktec.levelBuilder;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridLayout;
@@ -25,13 +27,11 @@ import javax.swing.Timer;
  */
 public class GUI extends javax.swing.JFrame {
 
-    /**
-     * Creates new form GUI
-     */
+    Game game;
     public GUI() {
         
         initializeImageMap();
-        
+        this.game = new Game(this);
         initComponents();
         setBoard();
         
@@ -39,14 +39,13 @@ public class GUI extends javax.swing.JFrame {
         GamePlayPanel.requestFocusInWindow();
         GamePlayPanel.addKeyListener(new TankKeyListener());
         
-        movementTimer = new Timer(500, new ActionListener() {
+        movementTimer = new Timer(5000, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // Detener el temporizador después de cada período de descanso
                 movementTimer.stop();
             }
         });
-
     }
 
     /**
@@ -82,11 +81,11 @@ public class GUI extends javax.swing.JFrame {
             .addGap(0, 620, Short.MAX_VALUE)
         );
 
-        enemiesLeftLabel.setText("Enemigos restantes: " +  enemiesLeft);
+        enemiesLeftLabel.setText("Enemigos restantes: " +  game.getRemainingEnemies());
 
-        playerLifesLabel.setText("Vidas restantes: " + playerLifes);
+        playerLifesLabel.setText("Vidas restantes: " + game.getPlayerLifes());
 
-        actualLevelLabel.setText("Nivel actual: " + actualLevel);
+        actualLevelLabel.setText("Nivel actual: " + game.getActualLevel());
 
         wildcardLabel.setText("Comodin actual:");
 
@@ -151,9 +150,9 @@ public class GUI extends javax.swing.JFrame {
     }//GEN-LAST:event_startLevelButtonActionPerformed
 
     private void nextLevelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nextLevelButtonActionPerformed
-        loadNextLevel();
         GamePlayPanel.setFocusable(true);
         GamePlayPanel.requestFocusInWindow();
+        game.nextLevel();
         //GamePlayPanel.addKeyListener(new TankKeyListener());
     }//GEN-LAST:event_nextLevelButtonActionPerformed
 
@@ -190,6 +189,10 @@ public class GUI extends javax.swing.JFrame {
                 new GUI().setVisible(true);
             }
         });
+    }
+    
+    public void paintBoard(int[][] levelMatrix){
+            // Limpiar el panel actual
     }
     
     public void setBoard() {
@@ -240,8 +243,6 @@ public class GUI extends javax.swing.JFrame {
         if (actualLevel <= maxLevel) {
             GamePlayPanel.removeAll();
 
-            levelMatrix = levelBuilder.levelChooser(actualLevel);
-
             for (int i = 0; i < 13; i++) {
                 for (int j = 0; j < 13; j++) {
                     labels[i][j] = new JLabel();
@@ -282,10 +283,6 @@ public class GUI extends javax.swing.JFrame {
 
             labels[TankY][TankX].setIcon(new ImageIcon(tank.getIcon()));
             isTankInPlace[TankY][TankX] = true;
-
-        } else {
-
-            System.out.println("¡Has completado todos los niveles!");
         }
     }
           
@@ -487,7 +484,6 @@ public class GUI extends javax.swing.JFrame {
     }
     
     private boolean isValidMovement(int y, int x){
-        
         return y >= 0 && y < labels.length && x >= 0 && x < labels[0].length && !hasWall[y][x];
     }
     

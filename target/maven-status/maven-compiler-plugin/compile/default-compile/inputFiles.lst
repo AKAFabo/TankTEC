@@ -1,10 +1,22 @@
-C:\Users\Xtremetech\Documents\NetBeansProjects\TankTEC\src\main\java\com\mycompany\tanktec\Enemies\EnemyTank.java
-C:\Users\Xtremetech\Documents\NetBeansProjects\TankTEC\src\main\java\com\mycompany\tanktec\Enemies\StrongEnemy.java
-C:\Users\Xtremetech\Documents\NetBeansProjects\TankTEC\src\main\java\com\mycompany\tanktec\Enemies\ResistantEnemy.java
-C:\Users\Xtremetech\Documents\NetBeansProjects\TankTEC\src\main\java\com\mycompany\tanktec\Enemies\FastEnemy.java
-C:\Users\Xtremetech\Documents\NetBeansProjects\TankTEC\src\main\java\com\mycompany\tanktec\GUI.java
-C:\Users\Xtremetech\Documents\NetBeansProjects\TankTEC\src\main\java\com\mycompany\tanktec\Enemies\SimpleEnemy.java
-C:\Users\Xtremetech\Documents\NetBeansProjects\TankTEC\src\main\java\com\mycompany\tanktec\levelBuilder.java
-C:\Users\Xtremetech\Documents\NetBeansProjects\TankTEC\src\main\java\com\mycompany\tanktec\Player\Tank.java
-C:\Users\Xtremetech\Documents\NetBeansProjects\TankTEC\src\main\java\com\mycompany\tanktec\TankTEC.java
-C:\Users\Xtremetech\Documents\NetBeansProjects\TankTEC\src\main\java\com\mycompany\tanktec\Wall.java
+C:\Users\fabri\Documents\Universidad\II Semestre\POO\TankTEC\src\main\java\com\mycompany\tanktec\Enemies\FastEnemy.java
+C:\Users\fabri\Documents\Universidad\II Semestre\POO\TankTEC\src\main\java\Command\ShootCommand.java
+C:\Users\fabri\Documents\Universidad\II Semestre\POO\TankTEC\src\main\java\Command\MoveDownCommand.java
+C:\Users\fabri\Documents\Universidad\II Semestre\POO\TankTEC\src\main\java\Game\GUI.java
+C:\Users\fabri\Documents\Universidad\II Semestre\POO\TankTEC\src\main\java\com\mycompany\tanktec\Enemies\ResistantEnemy.java
+C:\Users\fabri\Documents\Universidad\II Semestre\POO\TankTEC\src\main\java\Command\CommandManager.java
+C:\Users\fabri\Documents\Universidad\II Semestre\POO\TankTEC\src\main\java\Command\MoveUpCommand.java
+C:\Users\fabri\Documents\Universidad\II Semestre\POO\TankTEC\src\main\java\Command\MoveRightCommand.java
+C:\Users\fabri\Documents\Universidad\II Semestre\POO\TankTEC\src\main\java\Command\MoveLeftCommand.java
+C:\Users\fabri\Documents\Universidad\II Semestre\POO\TankTEC\src\main\java\com\mycompany\tanktec\Enemies\SimpleEnemy.java
+C:\Users\fabri\Documents\Universidad\II Semestre\POO\TankTEC\src\main\java\Configuration\Configuration.java
+C:\Users\fabri\Documents\Universidad\II Semestre\POO\TankTEC\src\main\java\com\mycompany\tanktec\levelBuilder.java
+C:\Users\fabri\Documents\Universidad\II Semestre\POO\TankTEC\src\main\java\com\mycompany\tanktec\Player\Tank.java
+C:\Users\fabri\Documents\Universidad\II Semestre\POO\TankTEC\src\main\java\Command\ICommand.java
+C:\Users\fabri\Documents\Universidad\II Semestre\POO\TankTEC\src\main\java\com\mycompany\tanktec\Enemies\StrongEnemy.java
+C:\Users\fabri\Documents\Universidad\II Semestre\POO\TankTEC\src\main\java\Game\Test.java
+C:\Users\fabri\Documents\Universidad\II Semestre\POO\TankTEC\src\main\java\com\mycompany\tanktec\Enemies\EnemyTank.java
+C:\Users\fabri\Documents\Universidad\II Semestre\POO\TankTEC\src\main\java\com\mycompany\tanktec\Wall.java
+C:\Users\fabri\Documents\Universidad\II Semestre\POO\TankTEC\src\main\java\Game\TankTEC.java
+C:\Users\fabri\Documents\Universidad\II Semestre\POO\TankTEC\src\main\java\Game\Game.java
+C:\Users\fabri\Documents\Universidad\II Semestre\POO\TankTEC\src\main\java\Command\PauseCommand.java
+C:\Users\fabri\Documents\Universidad\II Semestre\POO\TankTEC\src\main\java\Command\ResumeCommand.java

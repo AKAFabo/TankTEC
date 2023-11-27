@@ -91,21 +91,21 @@
     <Component class="javax.swing.JLabel" name="enemiesLeftLabel">
       <Properties>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-          <Connection code="&quot;Enemigos restantes: &quot; +  enemiesLeft" type="code"/>
+          <Connection code="&quot;Enemigos restantes: &quot; +  game.getRemainingEnemies()" type="code"/>
         </Property>
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="playerLifesLabel">
       <Properties>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-          <Connection code="&quot;Vidas restantes: &quot; + playerLifes" type="code"/>
+          <Connection code="&quot;Vidas restantes: &quot; + game.getPlayerLifes()" type="code"/>
         </Property>
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="actualLevelLabel">
       <Properties>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-          <Connection code="&quot;Nivel actual: &quot; + actualLevel" type="code"/>
+          <Connection code="&quot;Nivel actual: &quot; + game.getActualLevel()" type="code"/>
         </Property>
       </Properties>
     </Component>
