@@ -2,9 +2,10 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
-package com.mycompany.tanktec;
+package Game;
 
 import com.mycompany.tanktec.Player.Tank;
+import com.mycompany.tanktec.levelBuilder;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridLayout;
@@ -25,13 +26,11 @@ import javax.swing.Timer;
  */
 public class GUI extends javax.swing.JFrame {
 
-    /**
-     * Creates new form GUI
-     */
+    Game game;
     public GUI() {
         
         initializeImageMap();
-        
+        this.game = new Game(this);
         initComponents();
         setBoard();
         
@@ -39,14 +38,13 @@ public class GUI extends javax.swing.JFrame {
         GamePlayPanel.requestFocusInWindow();
         GamePlayPanel.addKeyListener(new TankKeyListener());
         
-        movementTimer = new Timer(500, new ActionListener() {
+        movementTimer = new Timer(5000, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // Detener el temporizador después de cada período de descanso
                 movementTimer.stop();
             }
         });
-
     }
 
     /**
@@ -82,11 +80,11 @@ public class GUI extends javax.swing.JFrame {
             .addGap(0, 620, Short.MAX_VALUE)
         );
 
-        enemiesLeftLabel.setText("Enemigos restantes: " +  enemiesLeft);
+        enemiesLeftLabel.setText("Enemigos restantes: " +  game.getRemainingEnemies());
 
-        playerLifesLabel.setText("Vidas restantes: " + playerLifes);
+        playerLifesLabel.setText("Vidas restantes: " + game.getPlayerLifes());
 
-        actualLevelLabel.setText("Nivel actual: " + actualLevel);
+        actualLevelLabel.setText("Nivel actual: " + game.getActualLevel());
 
         wildcardLabel.setText("Comodin actual:");
 
@@ -151,9 +149,9 @@ public class GUI extends javax.swing.JFrame {
     }//GEN-LAST:event_startLevelButtonActionPerformed
 
     private void nextLevelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nextLevelButtonActionPerformed
-        loadNextLevel();
         GamePlayPanel.setFocusable(true);
         GamePlayPanel.requestFocusInWindow();
+        game.nextLevel();
         //GamePlayPanel.addKeyListener(new TankKeyListener());
     }//GEN-LAST:event_nextLevelButtonActionPerformed
 
@@ -192,55 +190,9 @@ public class GUI extends javax.swing.JFrame {
         });
     }
     
-    public void setBoard() {
-
-        GamePlayPanel.setPreferredSize(new Dimension(620, 620));
-       
-        GridLayout gridLayout = new GridLayout(13, 13);
-        GamePlayPanel.setLayout(gridLayout);
-        
-        levelMatrix = levelBuilder.levelChooser(actualLevel);
-
-        for (int i = 0; i < 13; i++) {
-            for (int j = 0; j < 13; j++) {
-                
-                
-
-                labels[i][j] = new JLabel();
-                labels[i][j].setOpaque(true);
-                
-                int identifier = levelMatrix[i][j];
-                ImageIcon imageIcon = imageMap.get(identifier);
-                
-                if (identifier != 0){
-                    labels[i][j].setIcon(imageIcon);
-                    if (identifier != 5){ //Si es arbol es transparente
-                        hasWall[i][j] = true; //Se hace para verificar las colisiones a la hora de mover el tanque enemigo y propio
-                    } else {
-                        hasGrass[i][j] = true;
-                    }
-                } else {
-                    labels[i][j].setBackground(new java.awt.Color(0, 0, 0));
-                }
-
-                labels[i][j].setPreferredSize(new Dimension(labelSize, labelSize));
-
-                GamePlayPanel.add(labels[i][j]);
-            }
-        }
-        
-        labels[TankY][TankX].setIcon(new ImageIcon(tank.getIcon())); 
-        isTankInPlace[TankY][TankX] = true;
-    }
-    
-    public void loadNextLevel() {
-        actualLevel++;
-
-        if (actualLevel <= maxLevel) {
+    public void paintBoard(int[][] levelMatrix){
             // Limpiar el panel actual
             GamePlayPanel.removeAll();
-
-            levelMatrix = levelBuilder.levelChooser(actualLevel);
 
             for (int i = 0; i < 13; i++) {
                 for (int j = 0; j < 13; j++) {
@@ -275,11 +227,41 @@ public class GUI extends javax.swing.JFrame {
 
             labels[TankY][TankX].setIcon(new ImageIcon(tank.getIcon()));
             isTankInPlace[TankY][TankX] = true;
+    }
+    
+    public void setBoard() {
+        GamePlayPanel.setPreferredSize(new Dimension(620, 620));
+       
+        GridLayout gridLayout = new GridLayout(13, 13);
+        GamePlayPanel.setLayout(gridLayout);
+        
+        levelMatrix = levelBuilder.levelChooser(game.getActualLevel());
 
-        } else {
+        for (int i = 0; i < 13; i++) {
+            for (int j = 0; j < 13; j++) {
+                labels[i][j] = new JLabel();
+                labels[i][j].setOpaque(true);
+                
+                int identifier = levelMatrix[i][j];
+                ImageIcon imageIcon = imageMap.get(identifier);
+                
+                if (identifier != 0){
+                    labels[i][j].setIcon(imageIcon);
+                    if (identifier != 5){ //Si es arbol es transparente
+                        hasWall[i][j] = true; //Se hace para verificar las colisiones a la hora de mover el tanque enemigo y propio
+                    } else {
+                        hasGrass[i][j] = true;
+                    }
+                } else {
+                    labels[i][j].setBackground(new java.awt.Color(0, 0, 0));
+                }
+                labels[i][j].setPreferredSize(new Dimension(labelSize, labelSize));
 
-            System.out.println("¡Has completado todos los niveles!");
+                GamePlayPanel.add(labels[i][j]);
+            }
         }
+        labels[TankY][TankX].setIcon(new ImageIcon(tank.getIcon())); 
+        isTankInPlace[TankY][TankX] = true;
     }
           
     private void initializeImageMap() {
@@ -467,7 +449,6 @@ public class GUI extends javax.swing.JFrame {
     }
     
     private boolean isValidMovement(int y, int x){
-        
         return y >= 0 && y < labels.length && x >= 0 && x < labels[0].length && !hasWall[y][x];
     }
     
@@ -475,10 +456,6 @@ public class GUI extends javax.swing.JFrame {
     private boolean[][] hasWall = new boolean[13][13];
     private boolean[][] hasGrass = new boolean[13][13];
     private boolean[][] isTankInPlace = new boolean[13][13];
-    private int enemiesLeft = 20;
-    private int playerLifes = 3;
-    private int actualLevel = 1;
-    private int maxLevel = 8;
     private int TankX = 4;
     private int TankY = 12;
     int labelSize = 620 / 13;

@@ -16,6 +16,13 @@ public class Tank {
     private int x = 4; //Posicion coordenada x, siempre empieza en 4
     private int y = 12; //Posicion coordenada y, siempre empieza en 12
     private char direction;
+    
+    public Tank(int timeBetweenShots, String icon, int health, char direction) {
+        this.timeBetweenShots = timeBetweenShots;
+        this.icon = icon;
+        this.health = health;
+        this.direction = direction;
+    }
 
     public char getDirection() {
         return direction;
@@ -69,12 +76,7 @@ public class Tank {
     
     
 
-    public Tank(int timeBetweenShots, String icon, int health, char direction) {
-        this.timeBetweenShots = timeBetweenShots;
-        this.icon = icon;
-        this.health = health;
-        this.direction = direction;
-    }
+
     
     
     

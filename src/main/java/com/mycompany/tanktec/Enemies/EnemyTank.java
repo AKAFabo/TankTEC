@@ -16,6 +16,14 @@ public class EnemyTank {
     private int timeBetweenShots; //worked in ms using config archive
     private int speed; //means how fast the tank changes fields, the higher the lower the speed, because it means seconds between tile change
 
+    public EnemyTank(String icon, String name, int health, int timeBetweenShots, int speed) {
+        this.icon = icon;
+        this.name = name;
+        this.health = health;
+        this.timeBetweenShots = timeBetweenShots;
+        this.speed = speed;
+    }
+    
     public int getSpeed() {
         return speed;
     }
@@ -54,14 +62,6 @@ public class EnemyTank {
 
     public void setTimeBetweenShots(int timeBetweenShots) {
         this.timeBetweenShots = timeBetweenShots;
-    }
-
-    public EnemyTank(String icon, String name, int health, int timeBetweenShots, int speed) {
-        this.icon = icon;
-        this.name = name;
-        this.health = health;
-        this.timeBetweenShots = timeBetweenShots;
-        this.speed = speed;
     }
     
     public void takeShot(){
