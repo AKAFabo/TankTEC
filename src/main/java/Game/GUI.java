@@ -202,6 +202,8 @@ public class GUI extends javax.swing.JFrame {
     
     public void paintBoard(int[][] levelMatrix){
     
+        // TODO hacer Backend
+        
     }
     
     public void setBoard() {
@@ -254,6 +256,7 @@ public class GUI extends javax.swing.JFrame {
 
         if (actualLevel <= maxLevel) {
             GamePlayPanel.removeAll();
+            levelMatrix = levelBuilder.levelChooser(actualLevel);
 
             for (int i = 0; i < 13; i++) {
                 for (int j = 0; j < 13; j++) {
