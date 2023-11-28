@@ -37,6 +37,7 @@ public class GUI extends javax.swing.JFrame {
         initializeImageMap();
         this.game = new Game(this);
         initComponents();
+        initializeObservers();
         setBoard();
         
         GamePlayPanel.setFocusable(true);
@@ -62,6 +63,9 @@ public class GUI extends javax.swing.JFrame {
         startLevelButton = new javax.swing.JButton();
         nextLevelButton = new javax.swing.JButton();
         jButton1 = new javax.swing.JButton();
+        shotsCounterLabel = new javax.swing.JLabel();
+        powerUpsCounterLabel = new javax.swing.JLabel();
+        destroyedTanksLabel = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setBackground(new java.awt.Color(51, 51, 51));
@@ -112,25 +116,39 @@ public class GUI extends javax.swing.JFrame {
                 .addComponent(GamePlayPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(enemiesLeftLabel)
-                        .addComponent(playerLifesLabel)
-                        .addComponent(actualLevelLabel)
-                        .addComponent(wildcardLabel)
-                        .addComponent(startLevelButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(nextLevelButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(59, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(276, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(enemiesLeftLabel)
+                            .addComponent(playerLifesLabel)
+                            .addComponent(actualLevelLabel)
+                            .addComponent(wildcardLabel)
+                            .addComponent(startLevelButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(nextLevelButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(powerUpsCounterLabel, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(destroyedTanksLabel, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(shotsCounterLabel, javax.swing.GroupLayout.Alignment.TRAILING))
+                        .addGap(82, 82, 82))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(57, 57, 57)
-                .addComponent(enemiesLeftLabel)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(enemiesLeftLabel)
+                    .addComponent(shotsCounterLabel))
                 .addGap(65, 65, 65)
-                .addComponent(playerLifesLabel)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(playerLifesLabel)
+                    .addComponent(powerUpsCounterLabel))
                 .addGap(65, 65, 65)
-                .addComponent(actualLevelLabel)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(actualLevelLabel)
+                    .addComponent(destroyedTanksLabel))
                 .addGap(75, 75, 75)
                 .addComponent(wildcardLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -199,6 +217,12 @@ public class GUI extends javax.swing.JFrame {
                 new GUI().setVisible(true);
             }
         });
+    }
+    
+    public void initializeObservers(){
+        game.addShotsCounterLabel(shotsCounterLabel, "Shots Fired");
+        game.addPowerUpsCounterLabel(powerUpsCounterLabel, "PowerUps Used");
+        game.addDestroyedTanksLabel(destroyedTanksLabel, "Destroyed Tanks");
     }
     
     public void paintBoard(int[][] levelMatrix){
@@ -382,7 +406,7 @@ public class GUI extends javax.swing.JFrame {
     }
     
     private synchronized void shootBullet(Object tankObject) {
-
+        game.increaseShots();
         final char tankDirection;
         final int bulletX;
         final int bulletY;
@@ -606,10 +630,13 @@ public class GUI extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel GamePlayPanel;
     private javax.swing.JLabel actualLevelLabel;
+    private javax.swing.JLabel destroyedTanksLabel;
     private javax.swing.JLabel enemiesLeftLabel;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton nextLevelButton;
     private javax.swing.JLabel playerLifesLabel;
+    private javax.swing.JLabel powerUpsCounterLabel;
+    private javax.swing.JLabel shotsCounterLabel;
     private javax.swing.JButton startLevelButton;
     private javax.swing.JLabel wildcardLabel;
     // End of variables declaration//GEN-END:variables

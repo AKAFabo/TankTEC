@@ -3,8 +3,11 @@ package Game;
 
 import Command.CommandManager;
 import Configuration.Configuration;
+import Observer.Counter;
+import Observer.DisplayCounter;
 import com.mycompany.tanktec.levelBuilder;
 import java.awt.Dimension;
+import java.util.ArrayList;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 
@@ -22,6 +25,10 @@ public class Game {
     
     private int tankX; // Tank X coordenates
     private int tankY;
+    
+    private Counter shotsCounter;
+    private Counter powerUpsCounter;
+    private Counter destroyedTanks;
     
     /*
     private int TankX = 4;
@@ -43,6 +50,10 @@ public class Game {
         
         this.tankX = config.getConfigValue("initialTankX");
         this.tankY = config.getConfigValue("initialTankY");
+        
+        this.shotsCounter = new Counter();
+        this.powerUpsCounter = new Counter();
+        this.destroyedTanks = new Counter();
     }
     
     /*          Getters and Setters           */
@@ -72,5 +83,29 @@ public class Game {
         } else {
             System.out.println("¡Has completado todos los niveles!");
         }
+    }
+    
+    public void increaseShots(){
+        shotsCounter.increaseCounter();
+    }
+    
+    public void increasePowerUp(){
+        powerUpsCounter.increaseCounter();
+    }
+    
+    public void increaseDestroyTanks(){
+        destroyedTanks.increaseCounter();
+    }
+    
+    public void addShotsCounterLabel(JLabel label, String title){
+        shotsCounter.addObserver(new DisplayCounter(label, title));
+    }
+    
+    public void addPowerUpsCounterLabel(JLabel label, String title){
+        powerUpsCounter.addObserver(new DisplayCounter(label, title));
+    }
+    
+    public void addDestroyedTanksLabel(JLabel label, String title){
+        destroyedTanks.addObserver(new DisplayCounter(label, title));
     }
 }
