@@ -10,10 +10,9 @@ package com.mycompany.tanktec.Enemies;
  */
 public class ResistantEnemy extends EnemyTank{
     
-    public ResistantEnemy(String icon, String name, int health, int timeBetweenShots, int speed, int x, String direction) {
-        super(icon, name, health, timeBetweenShots, speed, x, 'S');
+    public ResistantEnemy(String icon, int health, int x, char direction) {
+        super(icon, health, x, direction);
     }
     
-    
-    
+ 
 }

@@ -9,10 +9,9 @@ package com.mycompany.tanktec.Enemies;
  * @author Fabo
  */
 public class StrongEnemy extends EnemyTank{
-    
-    public StrongEnemy(String icon, String name, int health, int timeBetweenShots, int speed, int x, String direction) {
-        super(icon, name, health, timeBetweenShots, speed, x, 'S');
+
+    public StrongEnemy(String icon, int health, int x, char direction) {
+        super(icon, health, x, direction);
     }
-    
 
 }
