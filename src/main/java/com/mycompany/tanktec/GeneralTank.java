@@ -7,6 +7,7 @@ public class GeneralTank {
     private int x; //Posicion coordenada x, siempre empieza en 4
     private int y; //Posicion coordenada y, siempre empieza en 12
     private char direction;
+    private boolean isAlive = true;
 
     public GeneralTank(String icon, int health, int x, int y, char direction) {
         this.icon = icon;
@@ -14,6 +15,14 @@ public class GeneralTank {
         this.x = x;
         this.y = y;
         this.direction = direction;
+    }
+
+    public boolean isAlive() {
+        return isAlive;
+    }
+
+    public void setIsAlive(boolean isAlive) {
+        this.isAlive = isAlive;
     }
     
     

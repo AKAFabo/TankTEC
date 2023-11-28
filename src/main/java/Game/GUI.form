@@ -99,6 +99,9 @@
           <Connection code="&quot;Enemigos restantes: &quot; +  game.getRemainingEnemies()" type="code"/>
         </Property>
       </Properties>
+      <AuxValues>
+        <AuxValue name="JavaCodeGenerator_SerializeTo" type="java.lang.String" value="GUI_enemiesLeftLabel"/>
+      </AuxValues>
     </Component>
     <Component class="javax.swing.JLabel" name="playerLifesLabel">
       <Properties>
