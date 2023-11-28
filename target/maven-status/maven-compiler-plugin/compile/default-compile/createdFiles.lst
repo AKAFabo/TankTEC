@@ -1,3 +1,15 @@
+Tank\TankPowerUp.class
+Tank\PlayerTank.class
+Tank\HelmetPowerUp.class
+Tank\BombPowerUp.class
+Tank\IComponent.class
+Tank\Test.class
+Tank\AbstractDecorator.class
 Game\GUI$3.class
 Game\GUI$2.class
+Tank\ClockPowerUp.class
+Tank\Tank.class
+Tank\StartPowerUp.class
+Tank\EnemyTank.class
 Game\GUI$1.class
+Tank\ShovelPowerUp.class
