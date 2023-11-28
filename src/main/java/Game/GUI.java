@@ -5,6 +5,7 @@
 package Game;
 
 import com.mycompany.tanktec.Enemies.EnemyTank;
+import com.mycompany.tanktec.GeneralTank;
 import com.mycompany.tanktec.Player.Tank;
 import com.mycompany.tanktec.Wall;
 import com.mycompany.tanktec.levelBuilder;
@@ -244,6 +245,7 @@ public class GUI extends javax.swing.JFrame {
         
         labels[TankY][TankX].setIcon(new ImageIcon(tank.getIcon())); 
         isTankInPlace[TankY][TankX] = true;
+        tanks[TankY][TankX] = tank;
     }
     
     public void loadNextLevel() {
@@ -295,6 +297,7 @@ public class GUI extends javax.swing.JFrame {
 
             labels[TankY][TankX].setIcon(new ImageIcon(tank.getIcon()));
             isTankInPlace[TankY][TankX] = true;
+            tanks[TankY][TankX] = tank;
         }
     }
           
@@ -317,7 +320,7 @@ public class GUI extends javax.swing.JFrame {
                     case KeyEvent.VK_S -> moveTank(1, 0, 'S');
                     case KeyEvent.VK_A -> moveTank(0, -1, 'A');
                     case KeyEvent.VK_D -> moveTank(0, 1, 'D');
-                    case KeyEvent.VK_SPACE -> shootBullet();
+                    case KeyEvent.VK_SPACE -> shootBullet(tank);
                 }
             }).start();
         }
@@ -342,7 +345,9 @@ public class GUI extends javax.swing.JFrame {
         if (isValidMovement(newTankY, newTankX)) {
             
             isTankInPlace[TankY][TankX] = false;
+            tanks[TankY][TankX] = null;
             isTankInPlace[newTankY][newTankX] = true;
+            tanks[TankY][TankX] = tank;
 
         boolean originalHasGrass = hasGrass[TankY][TankX];
 
@@ -370,19 +375,31 @@ public class GUI extends javax.swing.JFrame {
             labels[TankY][TankX].setIcon(new ImageIcon(tank.getIcon()));
         }
     }
-
-        
+     
     }
     
-    private synchronized void shootBullet() {
+    private synchronized void shootBullet(Object tankObject) {
 
-        final int bulletX = TankX;
-        final int bulletY = TankY;
-        final char tankDirection = tank.getDirection();
+        final char tankDirection;
+        final int bulletX;
+        final int bulletY;
 
+            if (tankObject instanceof Tank) {
+                tankDirection = ((Tank) tankObject).getDirection();
+                bulletX = TankX;
+                bulletY = TankY;
+            } else if (tankObject instanceof EnemyTank) {
+                tankDirection = ((EnemyTank) tankObject).getDirection();
+                bulletX = ((EnemyTank) tankObject).getX();
+                bulletY = ((EnemyTank) tankObject).getY();
+            }  else {
+                tankDirection = 'N'; 
+                bulletX = 0;
+                bulletY = 0;
+            }      
+        
         new Thread(() -> {
-            
-            
+                      
             int currentBulletX = bulletX;
             int currentBulletY = bulletY;
             String bulletDirection = null;
@@ -428,7 +445,19 @@ public class GUI extends javax.swing.JFrame {
                                 labels[finalBulletY][finalBulletX].setBackground(new java.awt.Color(0, 0, 0));
                                 hasWall[finalBulletY][finalBulletX] = false;
                             }
-                        } else {
+                        } else if (isTankInPlace[finalBulletY][finalBulletX]){
+                            tanks[finalBulletY][finalBulletX].takeDamage();
+                            labels[finalBulletY][finalBulletX].setIcon(new ImageIcon(tanks[finalBulletY][finalBulletX].getIcon()));
+                            
+                            if(tanks[finalBulletY][finalBulletX].getHealth() == 0){
+                                labels[finalBulletY][finalBulletX].setIcon(null);
+                                labels[finalBulletY][finalBulletX].setBackground(new java.awt.Color(0, 0, 0));
+                                hasWall[finalBulletY][finalBulletX] = false;
+                                tanks[finalBulletY][finalBulletX] = null;
+                                isTankInPlace[finalBulletY][finalBulletX] = false;
+                            }
+                        }else{
+
                             switch (levelMatrix[finalBulletY][finalBulletX]){
                                 case 2 -> labels[finalBulletY][finalBulletX].setIcon(new ImageIcon("src/main/resources/metalWall.jpg"));
                                 case 3 -> labels[finalBulletY][finalBulletX].setBackground(new java.awt.Color(0, 0, 0));                                
@@ -504,13 +533,15 @@ public class GUI extends javax.swing.JFrame {
 
             for (int i = 0; i < 20; i++) {
                 int randomX = random.nextInt(13);
-                EnemyTank e = new EnemyTank("src/main/resources/GreenTankD.gif", "", 2, 1000, 1000, randomX, 'S');
+                EnemyTank e = new EnemyTank("src/main/resources/GreenTankD.gif", 2, randomX, 'S');
                 enemies.add(e);
 
                 SwingUtilities.invokeLater(() -> {
                     if (!hasWall[0][randomX]) {
                         labels[0][randomX].setIcon(new ImageIcon(e.getIcon()));
+                        isTankInPlace[0][randomX] = true;
                         hasWall[0][randomX] = true;
+                        tanks[0][randomX] = e;
                     }
                 });
 
@@ -522,9 +553,23 @@ public class GUI extends javax.swing.JFrame {
                     Thread.currentThread().interrupt();
                 }
             }
-            System.out.print(Thread.currentThread().getName());
         }).start();
     }
+
+    public synchronized void moveEnemyTank(EnemyTank enemy) {
+        char enemyDirection = enemy.getDirection();
+        int deltaX, deltaY;
+
+        switch (enemyDirection){
+            case ('W') -> {
+                //deltaX = 
+            }
+        }
+
+    }
+
+
+
     private JLabel[][] labels = new JLabel[13][13];
     private boolean[][] hasWall = new boolean[13][13];
     private boolean[][] hasGrass = new boolean[13][13];
@@ -532,6 +577,7 @@ public class GUI extends javax.swing.JFrame {
     private boolean[][] isTankInPlace = new boolean[13][13];
     private Wall[][] bricks = new Wall[13][13];
     private ArrayList<EnemyTank> enemies = new ArrayList<>();
+    private GeneralTank[][] tanks = new GeneralTank[13][13];
     
     private int enemiesLeft = 20;
     private int playerLifes = 3;
@@ -549,7 +595,9 @@ public class GUI extends javax.swing.JFrame {
     private final String bulletL = "src/main/resources/bulletL.gif";
     private final String bulletR = "src/main/resources/bulletR.gif";
     
-    Tank tank = new Tank(500, "src/main/resources/tankU.gif", 1, 'W'); 
+    Tank tank = new Tank("src/main/resources/tankU.gif", 1, 'W');
+    
+    
     
     Timer movementTimer;
     // Variables declaration - do not modify//GEN-BEGIN:variables
