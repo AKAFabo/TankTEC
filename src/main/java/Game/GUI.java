@@ -12,16 +12,17 @@ import com.mycompany.tanktec.levelBuilder;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
@@ -327,18 +328,15 @@ public class GUI extends javax.swing.JFrame {
                 }
             }).start();
         }
-
         @Override
         public void keyReleased(KeyEvent e) {
             // Puedes agregar lógica adicional aquí si es necesario
         }
-
         @Override
         public void keyTyped(KeyEvent e) {
             // Puedes agregar lógica adicional aquí si es necesario
         }
     }
-
     
     private synchronized void moveTank(int deltaY, int deltaX, char key) {
         int newTankX = TankX + deltaX;
@@ -350,14 +348,14 @@ public class GUI extends javax.swing.JFrame {
             isTankInPlace[TankY][TankX] = false;
             tanks[TankY][TankX] = null;
             isTankInPlace[newTankY][newTankX] = true;
-            tanks[TankY][TankX] = tank;
+            tanks[newTankY][newTankX] = tank;
 
         boolean originalHasGrass = hasGrass[TankY][TankX];
 
         if (originalHasGrass) {
-            labels[TankY][TankX].setBackground(new Color(0, 128, 0)); 
-        } else {
-            labels[TankY][TankX].setIcon(null);
+                labels[TankY][TankX].setBackground(new Color(0, 128, 0)); 
+            } else {
+                labels[TankY][TankX].setIcon(null);
         }
 
         TankY = newTankY;
@@ -382,11 +380,9 @@ public class GUI extends javax.swing.JFrame {
     }
     
     private synchronized void shootBullet(Object tankObject) {
-
         final char tankDirection;
         final int bulletX;
         final int bulletY;
-
             if (tankObject instanceof Tank) {
                 tankDirection = ((Tank) tankObject).getDirection();
                 bulletX = TankX;
@@ -401,8 +397,7 @@ public class GUI extends javax.swing.JFrame {
                 bulletY = 0;
             }      
         
-        new Thread(() -> {
-                      
+        new Thread(() -> {                      
             int currentBulletX = bulletX;
             int currentBulletY = bulletY;
             String bulletDirection = null;
@@ -459,13 +454,19 @@ public class GUI extends javax.swing.JFrame {
                                 tanks[finalBulletY][finalBulletX] = null;
                                 isTankInPlace[finalBulletY][finalBulletX] = false;
                             }
+                            
                         }else{
 
                             switch (levelMatrix[finalBulletY][finalBulletX]){
-                                case 2 -> labels[finalBulletY][finalBulletX].setIcon(new ImageIcon("src/main/resources/metalWall.jpg"));
-                                case 3 -> labels[finalBulletY][finalBulletX].setBackground(new java.awt.Color(0, 0, 0));                                
-                            }
-                        }                       
+                                case (2) -> {
+                                    labels[finalBulletY][finalBulletX].setIcon(new ImageIcon("src/main/resources/metalWall.jpg"));
+                                }
+                                case (3) -> {
+                                    labels[finalBulletY][finalBulletX].setBackground(new java.awt.Color(0, 0, 0));  
+                                    JOptionPane.showMessageDialog(null, "Nivel perdido");
+                                }
+                            } 
+                        }
                         switch (tankDirection) {
                             case ('W') -> {
                                 labels[finalBulletY+1][finalBulletX].setIcon(null);
@@ -537,7 +538,6 @@ public class GUI extends javax.swing.JFrame {
             for (int i = 0; i < 20; i++) {
                 int randomX = random.nextInt(13);
                 EnemyTank e = new EnemyTank("src/main/resources/GreenTankD.gif", 2, randomX, 'S');
-                enemies.add(e);
 
                 SwingUtilities.invokeLater(() -> {
                     if (!hasWall[0][randomX]) {
@@ -545,6 +545,10 @@ public class GUI extends javax.swing.JFrame {
                         isTankInPlace[0][randomX] = true;
                         hasWall[0][randomX] = true;
                         tanks[0][randomX] = e;
+                        moveEnemyTank(e);
+                        enemiesLeft++;
+                        game.setRemainingEnemies(enemiesLeft);
+                        enemiesLeftLabel.setText("Remaining enemies: " + game.getRemainingEnemies());
                     }
                 });
 
@@ -556,19 +560,110 @@ public class GUI extends javax.swing.JFrame {
                     Thread.currentThread().interrupt();
                 }
             }
+            
         }).start();
     }
 
     public synchronized void moveEnemyTank(EnemyTank enemy) {
-        char enemyDirection = enemy.getDirection();
-        int deltaX, deltaY;
+            
+        new Thread(() -> {                      
+            while (true){
+                char enemyDirection = enemy.getDirection();
+                int deltaX = 0, deltaY = 0;
+                char possibleDirection = 'A';
 
-        switch (enemyDirection){
-            case ('W') -> {
-                //deltaX = 
+                try {
+                    Thread.sleep(1700);
+
+                switch (enemyDirection){
+                    case ('W') -> {
+                        deltaY = -1;
+                        possibleDirection = 'D';
+                    }
+                    case ('S') -> {
+                        deltaY = 1;
+                        possibleDirection = 'A';
+                    }
+                    case ('A') -> {
+                        deltaX = -1;           
+                        possibleDirection = 'W';
+                    }
+                    case ('D') -> {
+                        possibleDirection = 'S';
+                        deltaX = 1;
+                    }
+                }
+                int newX = enemy.getX() + deltaX;
+                int newY = enemy.getY() + deltaY;
+                
+                if (isValidMovement(newY, newX)){
+                    isTankInPlace[enemy.getY()][enemy.getX()] = false;
+                    tanks[enemy.getY()][enemy.getX()]= null;
+                    isTankInPlace[newY][newX] = true;
+                    tanks[newY][newX] = enemy;
+                    labels[enemy.getY()][enemy.getX()].setIcon(null);
+                    hasWall[enemy.getY()][enemy.getX()] = false;
+                    hasWall[newY][newX] = true;
+                    enemy.setX(newX);
+                    enemy.setY(newY);
+                    
+                                       
+                    boolean originalHasGrass = hasGrass[TankY][TankX];
+
+                    if (originalHasGrass) {
+                        labels[enemy.getY()][enemy.getX()].setBackground(new Color(0, 128, 0)); 
+                    } else {
+                        labels[enemy.getY()][enemy.getX()].setIcon(null);
+                    }
+                    
+                    boolean newHasGrass = hasGrass[TankY][TankX];
+
+                    if (newHasGrass) {
+                        labels[newY][newX].setBackground(new Color(0, 128, 0)); 
+                    } else {
+                        labels[newY][newX].setIcon(new ImageIcon(enemy.getIcon()));
+                    }
+                    
+                    Thread.sleep(500);
+                    shootBullet(enemy);
+                    
+                } else {
+                    enemy.setDirection(possibleDirection);
+                }
+                
+                switch (enemy.getDirection()) {
+                    case 'W' -> enemy.setIcon("src/main/resources/GreenTankU.gif");
+                    case 'A' -> enemy.setIcon("src/main/resources/GreenTankL.gif");
+                    case 'S' -> enemy.setIcon("src/main/resources/GreenTankD.gif");
+                    case 'D' -> enemy.setIcon("src/main/resources/GreenTankR.gif");
+                }
+                
+                if (enemy.getHealth() == 0){
+                    isTankInPlace[enemy.getY()][enemy.getX()] = false;
+                    tanks[enemy.getY()][enemy.getX()]= null;
+                    labels[enemy.getY()][enemy.getX()].setIcon(null);
+                    hasWall[enemy.getY()][enemy.getX()] = false;
+                    enemy.setIcon("");                   
+                    System.out.println("Muerto");
+                    
+                    game.tankKilled();
+                    enemiesLeftLabel.setText("Remaining enemies: " + game.getRemainingEnemies());
+                    enemiesLeft--;
+                    
+                    if (enemiesLeft == 0){
+                        JOptionPane.showMessageDialog(null, "Stage completed");
+                    }
+                    break;
+                }
+                Thread.sleep(250);
+                
+                
+            }   catch (InterruptedException ex) {
+                    Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
+                }
+
             }
-        }
-
+        }).start();
     }
 
 
@@ -576,13 +671,12 @@ public class GUI extends javax.swing.JFrame {
     private JLabel[][] labels = new JLabel[13][13];
     private boolean[][] hasWall = new boolean[13][13];
     private boolean[][] hasGrass = new boolean[13][13];
-    private boolean[][] hasWater = new boolean[13][13];
     private boolean[][] isTankInPlace = new boolean[13][13];
     private Wall[][] bricks = new Wall[13][13];
     private ArrayList<EnemyTank> enemies = new ArrayList<>();
     private GeneralTank[][] tanks = new GeneralTank[13][13];
     
-    private int enemiesLeft = 20;
+    private int enemiesLeft;
     private int playerLifes = 3;
     private int actualLevel = 1;
     private int maxLevel = 8;

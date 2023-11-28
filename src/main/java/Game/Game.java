@@ -58,7 +58,13 @@ public class Game {
         return playerLifes;
     }
     
+    public void setRemainingEnemies(int remainingEnemies){
+        this.remainingEnemies = remainingEnemies;
+    }
     
+    public void tankKilled() {
+        remainingEnemies--;
+    }           
     
     /*                Methods                 */
     public void startGame(){
