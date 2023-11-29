@@ -10,8 +10,8 @@ package com.mycompany.tanktec.Enemies;
  */
 public class SimpleEnemy extends EnemyTank{
     
-    public SimpleEnemy(String icon, int health, int x, char direction) {
-        super(icon, health, x, direction);
+    public SimpleEnemy(String icon, int health, int x, char direction, boolean powerUp) {
+        super(icon, health, x, direction, powerUp);
     }
     
   

@@ -14,6 +14,7 @@ public class Configuration {
     private Configuration(){
         configSettings = new HashMap<>();
         // Relevant Data
+        setConfigValue("boardSize", 13);
         setConfigValue("startEnemies", 20);
         setConfigValue("playerLifes", 3);
         setConfigValue("maxLevel", 8);
