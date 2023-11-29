@@ -25,13 +25,15 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
+import Configuration.Configuration;
+import Tank.*;
 
 /**
  *
  * @author Fabo
  */
 public class GUI extends javax.swing.JFrame {
-
+    boolean running = true;
     Game game;
     public GUI() {
         
@@ -107,6 +109,11 @@ public class GUI extends javax.swing.JFrame {
         });
 
         jButton1.setText("jButton1");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -182,6 +189,11 @@ public class GUI extends javax.swing.JFrame {
         loadNextLevel();
         //GamePlayPanel.addKeyListener(new TankKeyListener());
     }//GEN-LAST:event_nextLevelButtonActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        //addPowerUpBoard();
+        protectBase();
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -277,7 +289,6 @@ public class GUI extends javax.swing.JFrame {
     
     public void loadNextLevel() {
         actualLevel++;
-        System.out.println("Hola");
         
         levelMatrix = levelBuilder.levelChooser(actualLevel);
 
@@ -336,6 +347,60 @@ public class GUI extends javax.swing.JFrame {
         imageMap.put(4, new ImageIcon("src/main/resources/brickWall.jpg"));
         imageMap.put(5, new ImageIcon("src/main/resources/tree.jpg"));
     }
+
+    public void protectBase() {
+        bricks[11][5] = new Wall();
+        hasWall[11][5] = true;
+        levelMatrix[11][5] = 4;
+        labels[11][5].setIcon(new ImageIcon("src/main/resources/metalWall.jpg"));
+        
+        bricks[11][6] = new Wall();
+        hasWall[11][6] = true;
+        levelMatrix[11][6] = 4;
+        labels[11][6].setIcon(new ImageIcon("src/main/resources/metalWall.jpg"));
+        
+        bricks[11][7] = new Wall();
+        hasWall[11][7] = true;
+        levelMatrix[11][7] = 4;
+        labels[11][7].setIcon(new ImageIcon("src/main/resources/metalWall.jpg"));
+        
+        bricks[12][5] = new Wall();
+        hasWall[12][5] = true;
+        levelMatrix[12][5] = 4;
+        labels[12][5].setIcon(new ImageIcon("src/main/resources/metalWall.jpg"));
+        
+        bricks[12][7] = new Wall();
+        hasWall[12][7] = true;
+        levelMatrix[12][7] = 4;
+        labels[12][7].setIcon(new ImageIcon("src/main/resources/metalWall.jpg"));
+    }
+
+    public void unprotectBase() {
+        bricks[11][5] = new Wall();
+        hasWall[11][5] = true;
+        levelMatrix[11][5] = 5;
+        labels[11][5].setIcon(new ImageIcon("src/main/resources/brickWall.jpg"));
+        
+        bricks[11][6] = new Wall();
+        hasWall[11][6] = true;
+        levelMatrix[11][6] = 5;
+        labels[11][6].setIcon(new ImageIcon("src/main/resources/brickWall.jpg"));
+        
+        bricks[11][7] = new Wall();
+        hasWall[11][7] = true;
+        levelMatrix[11][7] = 5;
+        labels[11][7].setIcon(new ImageIcon("src/main/resources/brickWall.jpg"));
+        
+        bricks[12][5] = new Wall();
+        hasWall[12][5] = true;
+        levelMatrix[12][5] = 5;
+        labels[12][5].setIcon(new ImageIcon("src/main/resources/brickWall.jpg"));
+        
+        bricks[12][7] = new Wall();
+        hasWall[12][7] = true;
+        levelMatrix[12][7] = 5;
+        labels[12][7].setIcon(new ImageIcon("src/main/resources/brickWall.jpg"));
+    }
     
     private class TankKeyListener implements KeyListener {
         @Override
@@ -368,7 +433,6 @@ public class GUI extends javax.swing.JFrame {
         tank.setDirection(key);
         
         if (isValidMovement(newTankY, newTankX)) {
-            
             isTankInPlace[TankY][TankX] = false;
             tanks[TankY][TankX] = null;
             isTankInPlace[newTankY][newTankX] = true;
@@ -399,30 +463,48 @@ public class GUI extends javax.swing.JFrame {
         } else {
             labels[TankY][TankX].setIcon(new ImageIcon(tank.getIcon()));
         }
-    }
+        
+        if (hasPowerUp[TankX][TankY]) {
+
+            PowerUp powerUp = powerUps[TankX][TankY];
+
+            powerUp.start();
+
+            powerUps[TankX][TankY] = null;
+            hasPowerUp[TankX][TankY] = false;
+            labels[TankX][TankY].setIcon(null);
+            game.increasePowerUp();
+            
+        }
+        }
      
     }
     
     private synchronized void shootBullet(Object tankObject) {
-        game.increaseShots();
         final char tankDirection;
         final int bulletX;
         final int bulletY;
+        final String shooter;
             if (tankObject instanceof Tank) {
+                game.increaseShots();
                 tankDirection = ((Tank) tankObject).getDirection();
                 bulletX = TankX;
                 bulletY = TankY;
+                shooter = "player";
             } else if (tankObject instanceof EnemyTank) {
                 tankDirection = ((EnemyTank) tankObject).getDirection();
                 bulletX = ((EnemyTank) tankObject).getX();
                 bulletY = ((EnemyTank) tankObject).getY();
+                shooter = "enemy";
             }  else {
                 tankDirection = 'N'; 
                 bulletX = 0;
                 bulletY = 0;
+                shooter = "";
             }      
         
-        new Thread(() -> {                      
+        new Thread(() -> {    
+            String shooterType = shooter;
             int currentBulletX = bulletX;
             int currentBulletY = bulletY;
             String bulletDirection = null;
@@ -447,19 +529,37 @@ public class GUI extends javax.swing.JFrame {
                     }
 
             while (true) {
+                
                 try {
                     Thread.sleep(250);                   
 
                     // Actualizar la posición de la bala en la interfaz gráfica
                     final int finalBulletX = currentBulletX;
                     final int finalBulletY = currentBulletY;
-                  
                     labels[finalBulletY][finalBulletX].setIcon(new ImageIcon(bulletDirection));
+                    GeneralTank tank = tanks[finalBulletY][finalBulletX];
+                    
+                    if (isTankInPlace[finalBulletY][finalBulletX]){
+                        if (shooterType.equals("enemy") && tank instanceof Tank){
+                            tank.takeDamage(); 
+                            if(tanks[finalBulletY][finalBulletX].getHealth() == 0){
+                                labels[finalBulletY][finalBulletX].setIcon(null);
+                                labels[finalBulletY][finalBulletX].setBackground(new java.awt.Color(0, 0, 0));
+                                hasWall[finalBulletY][finalBulletX] = false;
+                                tanks[finalBulletY][finalBulletX] = null;
+                                isTankInPlace[finalBulletY][finalBulletX] = false;
+                                JOptionPane.showMessageDialog(null, "Nivel perdido");
+                                GUI g = new GUI();
+                                g.setVisible(true);
+                                this.dispose();
+                                
+                            }
+                        }
+                    }
                                                         
                     if (hasWall[finalBulletY][finalBulletX] && levelMatrix[finalBulletY][finalBulletX] != 1 &&
                             levelMatrix[finalBulletY][finalBulletX] != 5) {
-                        
-                        if (levelMatrix[finalBulletY][finalBulletX] == 4){                           
+                        if (levelMatrix[finalBulletY][finalBulletX] == 4){  
                             bricks[finalBulletY][finalBulletX].takeDamage();
                             labels[finalBulletY][finalBulletX].setIcon(new ImageIcon("src/main/resources/brickWall.jpg"));
                             
@@ -467,9 +567,14 @@ public class GUI extends javax.swing.JFrame {
                                 labels[finalBulletY][finalBulletX].setIcon(null);
                                 labels[finalBulletY][finalBulletX].setBackground(new java.awt.Color(0, 0, 0));
                                 hasWall[finalBulletY][finalBulletX] = false;
+                            }                            
+                            
+                        } else if (isTankInPlace[finalBulletY][finalBulletX]){                            
+                            if (shooterType.equals("player") && (tank instanceof EnemyTank)) {
+                                tank.takeDamage();
                             }
-                        } else if (isTankInPlace[finalBulletY][finalBulletX]){
-                            tanks[finalBulletY][finalBulletX].takeDamage();
+
+
                             labels[finalBulletY][finalBulletX].setIcon(new ImageIcon(tanks[finalBulletY][finalBulletX].getIcon()));
                             
                             if(tanks[finalBulletY][finalBulletX].getHealth() == 0){
@@ -478,10 +583,13 @@ public class GUI extends javax.swing.JFrame {
                                 hasWall[finalBulletY][finalBulletX] = false;
                                 tanks[finalBulletY][finalBulletX] = null;
                                 isTankInPlace[finalBulletY][finalBulletX] = false;
+                                game.increaseDestroyTanks();
+                                if ((tank instanceof EnemyTank) && ((EnemyTank) tank).getHasPowerUp()) {
+                                    addPowerUpBoard();
+                                }
                             }
                             
                         }else{
-
                             switch (levelMatrix[finalBulletY][finalBulletX]){
                                 case (2) -> {
                                     labels[finalBulletY][finalBulletX].setIcon(new ImageIcon("src/main/resources/metalWall.jpg"));
@@ -489,6 +597,9 @@ public class GUI extends javax.swing.JFrame {
                                 case (3) -> {
                                     labels[finalBulletY][finalBulletX].setBackground(new java.awt.Color(0, 0, 0));  
                                     JOptionPane.showMessageDialog(null, "Nivel perdido");
+                                    GUI g = new GUI();
+                                    g.setVisible(true);
+                                    this.dispose();
                                 }
                             } 
                         }
@@ -556,13 +667,80 @@ public class GUI extends javax.swing.JFrame {
         return y >= 0 && y < labels.length && x >= 0 && x < labels[0].length && !hasWall[y][x];
     }
     
+    public boolean placeEmpty(int x, int y){
+        if (hasWall[x][y]) {
+            return false;
+        }
+        if (hasGrass[x][y]) {
+            return false;
+        }
+        if(isTankInPlace[x][y]){
+            return false;
+        }
+        if(hasPowerUp[x][y]){
+            return false;
+        }
+        return true;
+    }
+    
+    public void addPowerUpBoard(){
+        Random random = new Random();
+        int randomX = random.nextInt(boardSize);
+        int randomY = random.nextInt(boardSize);
+        
+        while(!placeEmpty(randomX, randomY)){
+            randomX = random.nextInt(boardSize);
+            randomY = random.nextInt(boardSize);
+        }
+        
+        hasPowerUp[randomX][randomY] = true;
+        labels[randomX][randomY].setIcon(new ImageIcon("src/main/resources/hp.png"));
+        
+        int number = 3;  //random.nextInt(6);
+        
+        switch (number) {
+            case 0:
+                powerUps[randomX][randomY] = new ClockPowerUp(this);
+                break;
+            case 1:
+                powerUps[randomX][randomY] = new BombPowerUp(this);
+                break;
+            case 2:
+                powerUps[randomX][randomY] = new HelmetPowerUp(this);
+                break;
+            case 3:
+                System.out.println("Game.GUI.addPowerUpBoard() dfsd");
+                powerUps[randomX][randomY] = new ShovelPowerUp(this);
+                break;
+            case 4:
+                powerUps[randomX][randomY] = new StartPowerUp(this);
+                break;
+            case 5:
+                powerUps[randomX][randomY] = new TankPowerUp(this);
+                break;
+            default:
+                throw new AssertionError();
+        }
+        
+    }
+
+    
     public synchronized void spawnTanks() {
         new Thread(() -> {
             Random random = new Random();
 
-            for (int i = 0; i < 20; i++) {
-                int randomX = random.nextInt(13);
-                EnemyTank e = new EnemyTank("src/main/resources/GreenTankD.gif", 2, randomX, 'S');
+            for (int i = 0; i < 4; i++) {
+                int randomX = random.nextInt(boardSize);
+                
+                int possibility = random.nextInt(10);
+                
+                EnemyTank e;
+                if (possibility != 9) {
+                    e = new EnemyTank("src/main/resources/RedTankD.gif", 2, randomX, 'S', true);
+                } else{
+                    e = new EnemyTank("src/main/resources/GreenTankD.gif", 2, randomX, 'S', false);
+                }
+                
 
                 SwingUtilities.invokeLater(() -> {
                     if (!hasWall[0][randomX]) {
@@ -655,13 +833,22 @@ public class GUI extends javax.swing.JFrame {
                 } else {
                     enemy.setDirection(possibleDirection);
                 }
-                
-                switch (enemy.getDirection()) {
-                    case 'W' -> enemy.setIcon("src/main/resources/GreenTankU.gif");
-                    case 'A' -> enemy.setIcon("src/main/resources/GreenTankL.gif");
-                    case 'S' -> enemy.setIcon("src/main/resources/GreenTankD.gif");
-                    case 'D' -> enemy.setIcon("src/main/resources/GreenTankR.gif");
+                if (!enemy.getHasPowerUp()) {
+                    switch (enemy.getDirection()) {
+                        case 'W' -> enemy.setIcon("src/main/resources/GreenTankU.gif");
+                        case 'A' -> enemy.setIcon("src/main/resources/GreenTankL.gif");
+                        case 'S' -> enemy.setIcon("src/main/resources/GreenTankD.gif");
+                        case 'D' -> enemy.setIcon("src/main/resources/GreenTankR.gif");
+                    }
+                } else{
+                    switch (enemy.getDirection()) {
+                        case 'W' -> enemy.setIcon("src/main/resources/RedTankU.gif");
+                        case 'A' -> enemy.setIcon("src/main/resources/RedTankL.gif");
+                        case 'S' -> enemy.setIcon("src/main/resources/RedTankD.gif");
+                        case 'D' -> enemy.setIcon("src/main/resources/RedTankR.gif");
+                    } 
                 }
+
                 
                 if (enemy.getHealth() == 0){
                     isTankInPlace[enemy.getY()][enemy.getX()] = false;
@@ -691,15 +878,18 @@ public class GUI extends javax.swing.JFrame {
         }).start();
     }
 
+    Configuration config = Configuration.getInstance();
+    int boardSize = config.getConfigValue("boardSize");
 
-
-    private JLabel[][] labels = new JLabel[13][13];
-    private boolean[][] hasWall = new boolean[13][13];
-    private boolean[][] hasGrass = new boolean[13][13];
-    private boolean[][] isTankInPlace = new boolean[13][13];
-    private Wall[][] bricks = new Wall[13][13];
+    private JLabel[][] labels = new JLabel[boardSize][boardSize];
+    private boolean[][] hasWall = new boolean[boardSize][boardSize];
+    private boolean[][] hasGrass = new boolean[boardSize][boardSize];
+    private boolean[][] hasPowerUp = new boolean[boardSize][boardSize];
+    private PowerUp[][] powerUps = new PowerUp[boardSize][boardSize];
+    private boolean[][] isTankInPlace = new boolean[boardSize][boardSize];
+    private Wall[][] bricks = new Wall[boardSize][boardSize];
     private ArrayList<EnemyTank> enemies = new ArrayList<>();
-    private GeneralTank[][] tanks = new GeneralTank[13][13];
+    private GeneralTank[][] tanks = new GeneralTank[boardSize][boardSize];
     
     private int enemiesLeft;
     private int playerLifes = 3;

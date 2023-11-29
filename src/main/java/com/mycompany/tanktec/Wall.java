@@ -20,7 +20,6 @@ public class Wall {
         this.health = health;
     }
 
-
     public void takeDamage(){
         this.health--;
     }

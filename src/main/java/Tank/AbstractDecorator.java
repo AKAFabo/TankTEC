@@ -110,51 +110,51 @@ public class AbstractDecorator implements IComponent{
     }
 }
 
-class ClockPowerUp extends AbstractDecorator{
+class ClockPowerUp_ extends AbstractDecorator{
     
-    public ClockPowerUp(IComponent tank) {
+    public ClockPowerUp_(IComponent tank) {
         super(tank, 0, "Stops the enemy tanks for 10 seconds.", 0, 0);
         Configuration config = Configuration.getInstance();
         setDuration(config.getConfigValue("clockTime"));
     }
 }
 
-class TankPowerUp extends AbstractDecorator{
+class TankPowerUp_ extends AbstractDecorator{
     
-    public TankPowerUp(IComponent tank) {
+    public TankPowerUp_(IComponent tank) {
         super(tank, -1, "higherSpeed", 0, 0);
         Configuration config = Configuration.getInstance();
         setSpeed(config.getConfigValue("higherSpeed"));
     }
 }
 
-class StartPowerUp extends AbstractDecorator{
+class StartPowerUp_ extends AbstractDecorator{
     
-    public StartPowerUp(IComponent tank) {
+    public StartPowerUp_(IComponent tank) {
         super(tank, -1, "The own tank fires more quickly.", 0, 0);
         Configuration config = Configuration.getInstance();
         setTimeBetweenShots(config.getConfigValue("higherTimeBetweenShots"));
     }
 }
 
-class ShovelPowerUp extends AbstractDecorator{
+class ShovelPowerUp_ extends AbstractDecorator{
     
-    public ShovelPowerUp(IComponent tank) {
+    public ShovelPowerUp_(IComponent tank) {
         super(tank, 0, "Protects the fort or base with metal for 20 seconds.", 0, 0);
         Configuration config = Configuration.getInstance();
         setDuration(config.getConfigValue("shovelTime"));
     }
 }
-class BombPowerUp extends AbstractDecorator{
+class BombPowerUp_ extends AbstractDecorator{
     
-    public BombPowerUp(IComponent tank) {
+    public BombPowerUp_(IComponent tank) {
         super(tank, 0, "Destroys all enemy tanks that are on-screen at that precise moment.", 0, 0);
         Configuration config = Configuration.getInstance();
     }
 }
-class HelmetPowerUp extends AbstractDecorator{
+class HelmetPowerUp_ extends AbstractDecorator{
     
-    public HelmetPowerUp(IComponent tank) {
+    public HelmetPowerUp_(IComponent tank) {
         super(tank, 0, "Provides a 10-second protective barrier to the own tank.", 0, 0);
         Configuration config = Configuration.getInstance();
         setDuration(config.getConfigValue("helmetTime"));
